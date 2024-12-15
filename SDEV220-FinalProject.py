@@ -14,20 +14,19 @@ from datetime import datetime
 conn = sqlite3.connect('appointments.db')
 cursor = conn.cursor()
 
-# Create the appointments table if it doesn't exist
 cursor.execute('''CREATE TABLE IF NOT EXISTS appointments
                   (id INTEGER PRIMARY KEY, customer_name TEXT, phone_number TEXT, 
                    date TEXT, time TEXT, service TEXT, comments TEXT)''')
 conn.commit()
 
-# Function to save appointments (handled by SQLite automatically)
+# Function to save appointments 
 def save_appointments():
     conn.commit()
 
 def main_window():
     # Main window setup
     def show_login():
-        # Hide the main buttons and show the login form
+        
         button_staff.pack_forget()
         login_frame.pack(pady=20)
 
@@ -35,10 +34,10 @@ def main_window():
         username = entry_username.get()
         password = entry_password.get()
 
-        # Here we're using hardcoded login credentials for simplicity
+        
         if username == "123" and password == "123":
             
-            # Hide the login form
+            
             login_frame.pack_forget()
             
             # Show the appointments view
@@ -50,10 +49,10 @@ def main_window():
 
     def book_appointment_window():
         def fetch_availability(selected_date):
-            # Predefined working hours (9:00 AM to 4:00 PM)
+            
             all_slots = ["9:00 AM", "10:00 AM", "11:00 AM", "12:00 PM", "1:00 PM", "2:00 PM", "3:00 PM", "4:00 PM"]
             
-            # Query booked slots for the selected date
+            
             cursor.execute("SELECT time FROM appointments WHERE date = ?", (selected_date,))
             booked_times = [row[0] for row in cursor.fetchall()]
             
@@ -71,7 +70,7 @@ def main_window():
                 available_slots = fetch_availability(selected_date)
 
                 # Update the dropdown with available slots
-                time_var.set("")  # Clear current selection
+                time_var.set("")  
                 time_dropdown['values'] = available_slots
 
         # Create a new window for booking
@@ -129,7 +128,7 @@ def main_window():
 
             # Get the selected services
             selected_services_list = [service for service, var in selected_services.items() if var.get() == 1]
-            services = ", ".join(selected_services_list)  # Join the selected services into a comma-separated string
+            services = ", ".join(selected_services_list)  
 
             # Insert the appointment into the database
             cursor.execute("INSERT INTO appointments (date, time, service, customer_name, phone_number, comments) VALUES (?, ?, ?, ?, ?, ?)",
@@ -150,9 +149,9 @@ def main_window():
         selected_index = listbox.curselection()
         if selected_index:
             selected_appointment = appointments[selected_index[0]]
-            appointment_id = selected_appointment[0]  # assuming the first column is the ID
+            appointment_id = selected_appointment[0]  
 
-            # Confirmation dialog to ask if the user is sure
+          
             confirmation = messagebox.askyesno("Confirm Deletion", "Are you sure you want to delete this appointment?")
             if confirmation:
                 # Delete the appointment from the database
@@ -165,10 +164,10 @@ def main_window():
                 # Remove from the local appointments list
                 appointments.pop(selected_index[0])
 
-                # Optional: Provide feedback about the successful deletion
+                
                 messagebox.showinfo("Success", "Appointment deleted successfully!")
 
-                # Ensure the appointments window stays focused
+                
                 view_win.destory()
             else:
                 messagebox.showinfo("Cancelled", "Appointment deletion cancelled.")
@@ -178,12 +177,12 @@ def main_window():
 
     
     def on_close(view_win):
-    # Re-show the button after closing the appointments window
+    
         button_staff.pack(pady=20)
         view_win.destroy()
 
     def view_appointments():
-        # Query to fetch appointments
+        
         cursor.execute("SELECT * FROM appointments ORDER BY date ASC")
         appointments = cursor.fetchall()
 
@@ -205,14 +204,14 @@ def main_window():
         # Label and listbox for Upcoming Appointments
         tk.Label(frame, text="Upcoming Appointments",bg="white", font=('Helvetica', 12, 'bold')).grid(row=0, column=0, padx=10, pady=(0, 5))  # Label above listbox
         listbox_date = tk.Listbox(frame, height=10, width=50, bg="white")
-        listbox_date.grid(row=1, column=0, padx=(10, 20))  # Listbox below the label
+        listbox_date.grid(row=1, column=0, padx=(10, 20))  
 
         # Add scrollbar for listbox_date
         scrollbar_date = tk.Scrollbar(frame, orient="vertical", command=listbox_date.yview)
-        scrollbar_date.grid(row=1, column=1, sticky="ns")  # Place scrollbar next to listbox_date
+        scrollbar_date.grid(row=1, column=1, sticky="ns")  
         listbox_date.config(yscrollcommand=scrollbar_date.set)
 
-        # Populate the listbox with appointments
+        
         for i, appt in enumerate(appointments):
             listbox_date.insert(i, f"{appt[3]} {appt[2]} - {appt[1]}")
 
@@ -272,13 +271,13 @@ def main_window():
     button_customer = tk.Button(root, text="Book Appointment", bg="light blue", width=20, command=book_appointment_window)
     button_customer.pack(pady=20)
 
-    # Staff login button (for viewing appointments)
+    # Staff login button 
     button_staff = tk.Button(root, text="Staff Login",bg="light blue", width=20, command=show_login)
     button_staff.pack(pady=20)
     
 
 
-    # Login form (hidden initially)
+    # Login form 
     login_frame = tk.Frame(root)
     login_frame.configure(bg="white")
 
